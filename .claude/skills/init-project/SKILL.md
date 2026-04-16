@@ -211,7 +211,7 @@ Capture the Zoho project ID and all 4 task list IDs.
 
 - Portal ID: 60037513197
 - Project ID: $ZOHO_PROJECT_ID
-- Project URL: https://projects.zoho.com/portal/kilowott/project/$ZOHO_PROJECT_ID
+- Project URL: https://projects.zoho.in/portal/nordicintent/project/$ZOHO_PROJECT_ID
 - Task Lists:
   - Development: $TL_DEV_ID
   - Design & Content: $TL_DESIGN_ID
@@ -239,7 +239,7 @@ Print a clean summary:
 === Project Created ===
 
   Repo:    https://github.com/$GH_USER/$PROJECT_SLUG
-  Zoho:    https://projects.zoho.com/portal/kilowott/project/$ZOHO_PROJECT_ID
+  Zoho:    https://projects.zoho.in/portal/nordicintent/project/$ZOHO_PROJECT_ID
   Local:   ./$PROJECT_SLUG
 
   Deal:    $DEAL_NAME ($DEAL_ID)
