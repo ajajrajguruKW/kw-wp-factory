@@ -1,6 +1,6 @@
 ---
 name: init-project
-description: Scaffold a new WordPress project from kw-wp-scaffold template, configure placeholders, create Zoho project, and push to GitHub.
+description: Scaffold a new WordPress project from kw-wp-scaffold template, configure placeholders, create Zoho Projects project, and push to GitHub.
 user-invocable: true
 ---
 
@@ -37,15 +37,18 @@ Preflight passed
 
 ## Phase 2 — Gather Project Details
 
-Ask the user these 5 questions using `AskUserQuestion`. Ask all 5 in a single call:
+Ask the user these 8 questions using `AskUserQuestion`. Ask all 8 in a single call:
 
-| # | Variable             | Question                                        | Header        | Options / Notes                                                      |
-|---|----------------------|-------------------------------------------------|---------------|----------------------------------------------------------------------|
-| 1 | `PROJECT_SLUG`       | What is the project slug? (lowercase, hyphens)  | Slug          | Free text — validate: lowercase, hyphens only, no spaces             |
-| 2 | `CLIENT_NAME`        | What is the client's display name?              | Client        | Free text                                                            |
-| 3 | `NEEDS_WOO`          | Does this project need WooCommerce?             | WooCommerce   | Options: "Yes", "No"                                                 |
-| 4 | `PM_NAME`            | Who is the project manager?                     | PM            | Options: "Ajaj Raj Guru", "Karan Jeswani" (allow Other)              |
-| 5 | `DEV_NAMES`          | Who are the developers on this project?         | Developers    | Options: "Ajaj Raj Guru", "Karan Jeswani" (multiSelect, allow Other) |
+| # | Variable             | Question                                                  | Header        | Options / Notes                                                                   |
+|---|----------------------|-----------------------------------------------------------|---------------|-----------------------------------------------------------------------------------|
+| 1 | `PROJECT_SLUG`       | What is the project slug? (lowercase, hyphens)            | Slug          | Free text — validate: lowercase, hyphens only, no spaces                          |
+| 2 | `CLIENT_NAME`        | What is the client's display name?                        | Client        | Free text                                                                         |
+| 3 | `DEAL_ID`            | What is the HubSpot Deal ID?                              | Deal ID       | Free text                                                                         |
+| 4 | `DEAL_NAME`          | What is the HubSpot Deal Name?                            | Deal Name     | Free text                                                                         |
+| 5 | `ENGAGEMENT_MODEL`   | What is the engagement model?                             | Engagement    | Options: "Fixed Price", "Retainer", "T&M", "Discovery"                            |
+| 6 | `NEEDS_WOO`          | Does this project need WooCommerce?                       | WooCommerce   | Options: "Yes", "No"                                                              |
+| 7 | `PM_NAME`            | Who is the project manager?                               | PM            | Options: "Ajaj Raj Guru", "Karan Jeswani" (allow Other)                           |
+| 8 | `DEV_NAMES`          | Who are the developers on this project?                   | Developers    | Options: "Ajaj Raj Guru", "Karan Jeswani" (multiSelect, allow Other)              |
 
 After collecting answers, **validate the slug**: it must match `^[a-z][a-z0-9-]*$`. If not, ask again.
 
@@ -58,13 +61,16 @@ Display a single confirmation block:
 ```
 === New Project Summary ===
 
-  Slug:          $PROJECT_SLUG
-  Client:        $CLIENT_NAME
-  WooCommerce:   $NEEDS_WOO
-  PM:            $PM_NAME
-  Developers:    $DEV_NAMES
-  GitHub repo:   $GH_USER/$PROJECT_SLUG (private)
-  Template:      ajajrajguruKW/kw-wp-scaffold
+  Slug:             $PROJECT_SLUG
+  Client:           $CLIENT_NAME
+  Deal ID:          $DEAL_ID
+  Deal Name:        $DEAL_NAME
+  Engagement Model: $ENGAGEMENT_MODEL
+  WooCommerce:      $NEEDS_WOO
+  PM:               $PM_NAME
+  Developers:       $DEV_NAMES
+  GitHub repo:      $GH_USER/$PROJECT_SLUG (private)
+  Template:         ajajrajguruKW/kw-wp-scaffold
 
 Proceed? (yes / no)
 ```
@@ -91,14 +97,17 @@ After cloning, change the working directory into the new project folder.
 
 Search-and-replace these placeholders across **all files** in the repo (use `grep -rl` to find them, then `sed` to replace):
 
-| Placeholder          | Replacement      |
-|----------------------|------------------|
-| `KW_PROJECT_SLUG`    | `$PROJECT_SLUG`  |
-| `KW_CLIENT_NAME`     | `$CLIENT_NAME`   |
-| `KW_NEEDS_WOO`       | `$NEEDS_WOO`     |
-| `KW_PM_NAME`         | `$PM_NAME`       |
-| `KW_DEV_NAMES`       | `$DEV_NAMES`     |
-| `KW_DATE_CREATED`    | Today's date (YYYY-MM-DD) |
+| Placeholder            | Replacement               |
+|------------------------|---------------------------|
+| `KW_PROJECT_SLUG`      | `$PROJECT_SLUG`           |
+| `KW_CLIENT_NAME`       | `$CLIENT_NAME`            |
+| `KW_DEAL_ID`           | `$DEAL_ID`                |
+| `KW_DEAL_NAME`         | `$DEAL_NAME`              |
+| `KW_ENGAGEMENT_MODEL`  | `$ENGAGEMENT_MODEL`       |
+| `KW_NEEDS_WOO`         | `$NEEDS_WOO`              |
+| `KW_PM_NAME`           | `$PM_NAME`                |
+| `KW_DEV_NAMES`         | `$DEV_NAMES`              |
+| `KW_DATE_CREATED`      | Today's date (YYYY-MM-DD) |
 
 Use this bash pattern for each placeholder:
 ```bash
@@ -132,24 +141,50 @@ chmod +x .claude/hooks/*.sh 2>/dev/null || true
 
 Use the Zoho Projects MCP tools (either `mcp__548d36a9-c518-4b73-9c50-a051a482c44b__ZohoProjects_*` or `mcp__de778a69-53b2-4401-b64f-c5f2ab800324__*` — whichever is connected).
 
-**Step 1**: Get the portal ID:
-```
-getAllPortals()
-```
+**Portal ID**: `60037513197` (hardcoded — this is the Kilowott portal).
 
-**Step 2**: Create the project:
+**Step 1**: Create the project:
 ```
 createProject({
-  portal_id: $PORTAL_ID,
+  portal_id: "60037513197",
   body: {
     name: "$CLIENT_NAME — $PROJECT_SLUG",
-    description: "WordPress project for $CLIENT_NAME",
-    start_date: "YYYY-MM-DD"  // today
+    description: "WordPress project for $CLIENT_NAME\n\nDeal ID: $DEAL_ID\nDeal Name: $DEAL_NAME\nEngagement Model: $ENGAGEMENT_MODEL\nProject Manager: $PM_NAME\nDevelopers: $DEV_NAMES\nWooCommerce: $NEEDS_WOO",
+    start_date: "YYYY-MM-DD",  // today
+    custom_fields: {
+      deal_id: "$DEAL_ID",
+      deal_name: "$DEAL_NAME",
+      client_name: "$CLIENT_NAME",
+      engagement_model: "$ENGAGEMENT_MODEL",
+      project_manager: "$PM_NAME",
+      project_status: "In Backlog",
+      invoicing_type: "Non-Billable",
+      stage: "Discovery",
+      url_staging: "TBD",
+      url_live: "TBD",
+      seo: "NA",
+      sm_engagement: "NA",
+      design_adherence: "NA"
+    }
   }
 })
 ```
 
-**Step 3**: Create 4 task lists in the new project:
+> **Note on custom fields**: The Zoho Projects API may use UDF (User Defined Field) keys
+> like `UDF_CHAR1`, `UDF_CHAR2`, etc. instead of semantic names. Before calling createProject,
+> check the project layout for the correct UDF field mappings. If the API rejects `custom_fields`,
+> map each value to its corresponding `UDF_CHAR` / `UDF_LONG` / `UDF_TEXT` key based on
+> the portal's field configuration. Include all fields in the `body` at the top level:
+> ```
+> body: {
+>   name: "...",
+>   UDF_CHAR1: "$DEAL_ID",
+>   UDF_CHAR2: "$DEAL_NAME",
+>   ...
+> }
+> ```
+
+**Step 2**: Create 4 task lists in the new project:
 
 | Task List Name       |
 |----------------------|
@@ -160,7 +195,7 @@ createProject({
 
 ```
 createTaskList({
-  portal_id: $PORTAL_ID,
+  portal_id: "60037513197",
   project_id: $ZOHO_PROJECT_ID,
   body: { name: "Development", flag: "internal" }
 })
@@ -169,14 +204,14 @@ createTaskList({
 
 Capture the Zoho project ID and all 4 task list IDs.
 
-**Step 4**: Write Zoho IDs back into `PROJECT-STATUS.md`. Add or update a section:
+**Step 3**: Write Zoho IDs back into `PROJECT-STATUS.md`. Add or update a section:
 
 ```markdown
 ## Zoho
 
-- Portal ID: $PORTAL_ID
+- Portal ID: 60037513197
 - Project ID: $ZOHO_PROJECT_ID
-- Project URL: https://projects.zoho.com/portal/$PORTAL_NAME/project/$ZOHO_PROJECT_ID
+- Project URL: https://projects.zoho.com/portal/kilowott/project/$ZOHO_PROJECT_ID
 - Task Lists:
   - Development: $TL_DEV_ID
   - Design & Content: $TL_DESIGN_ID
@@ -204,8 +239,12 @@ Print a clean summary:
 === Project Created ===
 
   Repo:    https://github.com/$GH_USER/$PROJECT_SLUG
-  Zoho:    https://projects.zoho.com/portal/$PORTAL_NAME/project/$ZOHO_PROJECT_ID
+  Zoho:    https://projects.zoho.com/portal/kilowott/project/$ZOHO_PROJECT_ID
   Local:   ./$PROJECT_SLUG
+
+  Deal:    $DEAL_NAME ($DEAL_ID)
+  Model:   $ENGAGEMENT_MODEL
+  Stage:   Discovery
 
 Next steps:
   1. cd $PROJECT_SLUG
@@ -219,7 +258,7 @@ Next steps:
 
 - If `gh repo create` fails because the template doesn't exist yet, tell the user:
   "Template repo ajajrajguruKW/kw-wp-scaffold not found. Create it first or specify a different template."
-- If Zoho MCP is not connected, skip Phase 4.6 and note it in the summary:
-  "Zoho project was not created — MCP not connected. Create manually."
+- If Zoho Projects MCP is not connected, skip Phase 4.6 and note it in the summary:
+  "Zoho project was not created — Zoho Projects MCP not connected. Create manually."
 - If `npm install` fails, continue but warn the user.
 - Never leave a half-created GitHub repo without telling the user.
