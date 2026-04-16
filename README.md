@@ -5,12 +5,18 @@ One command installs everything. One command starts every project.
 
 ## Install (once per machine)
 
+**Mac / Linux:**
 ```bash
-claude install-skill ajajrajguruKW/kw-wp-factory
+curl -fsSL https://raw.githubusercontent.com/ajajrajguruKW/kw-wp-factory/master/install.sh | bash
 ```
 
-Run this once. The `/init-project` command is then available in Claude Code 
-from any directory on your machine, permanently.
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/ajajrajguruKW/kw-wp-factory/master/install.ps1 | iex
+```
+
+After running either command, restart Claude Code.  
+Then `/init-project` is available from any directory permanently.
 
 ### Prerequisites
 
@@ -97,9 +103,9 @@ command set is available:
 
 This repo contains a single Claude Code skill in `.claude/skills/init-project/SKILL.md`.
 
-When you run `claude install-skill ajajrajguruKW/kw-wp-factory`, Claude Code 
-copies that skill into `~/.claude/skills/` on your machine. From that point 
-`/init-project` is a global command available in every Claude Code session.
+The install script copies the skill into `~/.claude/skills/` on your machine. 
+From that point `/init-project` is a global command available in every 
+Claude Code session.
 
 New projects are created from the **kw-wp-scaffold** template:  
 [github.com/ajajrajguruKW/kw-wp-scaffold](https://github.com/ajajrajguruKW/kw-wp-scaffold)
@@ -118,16 +124,7 @@ New projects are created from the **kw-wp-scaffold** template:
 ## Troubleshooting
 
 **`/init-project` not found after install**  
-Restart Claude Code fully after running `claude install-skill`.
-
-**`install-skill` command not available**  
-Your Claude Code version may not support it yet. Manual install:
-```bash
-mkdir -p ~/.claude/skills/init-project
-curl -o ~/.claude/skills/init-project/SKILL.md \
-  https://raw.githubusercontent.com/ajajrajguruKW/kw-wp-factory/master/.claude/skills/init-project/SKILL.md
-```
-Then restart Claude Code.
+Restart Claude Code fully after running the install script.
 
 **GitHub CLI not authenticated**  
 The skill handles this automatically — it will run `gh auth login` 
